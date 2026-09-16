@@ -1,6 +1,4 @@
-Được. Dưới đây là **toàn bộ nội dung `README.md` hoàn chỉnh**, mình viết theo đúng kiểu để bạn **copy nguyên khối vào GitHub**. Mình giữ nội dung đủ chi tiết để thành viên mới vào repository có thể đọc và biết project đang làm gì, mình phải làm gì và phải tuân theo quy tắc nào.
 
-````markdown
 # 🏴‍☠️ Treasure Hunt 3D
 
 <p align="center">
