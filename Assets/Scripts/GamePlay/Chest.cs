@@ -1,4 +1,3 @@
-
 using UnityEngine;
 
 public class Chest : MonoBehaviour
@@ -10,27 +9,48 @@ public class Chest : MonoBehaviour
     [Header("Interaction")]
     public float interactionDistance = 2f;
 
+    [Header("Treasure")]
+    public bool requireAllKeys = false;
+    public bool isFinalTreasure = false;
+
+    [Header("Congratulations")]
+    public CongratulationsUI congratulationsUI;
+
     private bool isOpen = false;
+
+    void Start()
+    {
+        isOpen = false;
+
+        if (closedChest != null)
+        {
+            closedChest.SetActive(true);
+        }
+
+        if (openedChest != null)
+        {
+            openedChest.SetActive(false);
+        }
+    }
 
     public bool IsOpen()
     {
         return isOpen;
     }
 
-    public bool CanOpen(Vector3 playerPosition)
+    public bool CanOpen()
     {
-        if (isOpen)
+        if (!requireAllKeys)
+        {
+            return true;
+        }
+
+        if (GameManager.Instance == null)
         {
             return false;
         }
 
-        float distance =
-            Vector3.Distance(
-                playerPosition,
-                transform.position
-            );
-
-        return distance <= interactionDistance;
+        return GameManager.Instance.HasAllKeys();
     }
 
     public void OpenChest()
@@ -50,6 +70,23 @@ public class Chest : MonoBehaviour
         if (openedChest != null)
         {
             openedChest.SetActive(true);
+        }
+
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.PlayChestOpenSound();
+        }
+
+        if (isFinalTreasure)
+        {
+            if (GameManager.Instance != null)
+            {
+                GameManager.Instance.ShowCongratulations();
+            }
+            else if (congratulationsUI != null)
+            {
+                congratulationsUI.ShowCongratulations();
+            }
         }
     }
 }

@@ -7,7 +7,7 @@ public class CameraFollow : MonoBehaviour
     public Transform target;
 
     [Header("Camera Position")]
-    public float distance = 5f;
+    public float distance = 10f;
     public float height = 2.5f;
     public float lookHeight = 1.2f;
 

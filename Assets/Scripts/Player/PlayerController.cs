@@ -25,7 +25,7 @@ public class PlayerController : MonoBehaviour
     public float runAnimationSpeed = 1.5f;
 
     [Header("Chest")]
-    public float chestInteractionDistance = 2f;
+    public float chestInteractionDistance = 3f;
     public float chestAnimationDuration = 1.5f;
 
     private CharacterController controller;
@@ -35,6 +35,11 @@ public class PlayerController : MonoBehaviour
     private float jumpBufferCounter;
 
     private bool isOpeningChest = false;
+
+    private Chest nearbyChest = null;
+
+    private Vector3 startPosition;
+    private Quaternion startRotation;
 
     void Start()
     {
@@ -58,6 +63,12 @@ public class PlayerController : MonoBehaviour
                     mainCamera.transform;
             }
         }
+
+        startPosition =
+            transform.position;
+
+        startRotation =
+            transform.rotation;
     }
 
     void Update()
@@ -66,6 +77,8 @@ public class PlayerController : MonoBehaviour
         {
             return;
         }
+
+        CheckMapBoundary();
 
         if (isOpeningChest)
         {
@@ -76,8 +89,59 @@ public class PlayerController : MonoBehaviour
         UpdateGroundedState();
         HandleMovement();
         HandleJump();
+        HandleChestDetection();
         HandleInteraction();
         UpdateAnimation();
+    }
+
+    void CheckMapBoundary()
+    {
+        if (transform.position.y <
+            startPosition.y - 15f)
+        {
+            ResetPlayerPosition();
+        }
+    }
+
+    void ResetPlayerPosition()
+    {
+        controller.enabled = false;
+
+        transform.position =
+            startPosition;
+
+        transform.rotation =
+            startRotation;
+
+        controller.enabled = true;
+
+        verticalVelocity = 0f;
+        coyoteTimeCounter = 0f;
+        jumpBufferCounter = 0f;
+
+        isOpeningChest = false;
+        nearbyChest = null;
+
+        if (anim != null)
+        {
+            anim.SetBool(
+                "isMoving",
+                false
+            );
+
+            anim.speed = 1f;
+        }
+
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.ShowMessage(
+                "Bạn đã rời khỏi bản đồ!"
+            );
+        }
+
+        Debug.Log(
+            "Luffy đã trở về vị trí ban đầu."
+        );
     }
 
     void UpdateGroundedState()
@@ -110,7 +174,6 @@ public class PlayerController : MonoBehaviour
         float horizontal = 0f;
         float vertical = 0f;
 
-        // Chỉ dùng phím mũi tên để di chuyển
         if (Keyboard.current.leftArrowKey.isPressed)
         {
             horizontal = -1f;
@@ -264,6 +327,90 @@ public class PlayerController : MonoBehaviour
         );
     }
 
+    void HandleChestDetection()
+    {
+        Collider[] colliders =
+            Physics.OverlapSphere(
+                transform.position,
+                chestInteractionDistance
+            );
+
+        Chest closestChest = null;
+
+        float closestDistance =
+            chestInteractionDistance;
+
+        foreach (Collider collider in colliders)
+        {
+            Chest chest =
+                collider.GetComponent<Chest>();
+
+            if (chest == null)
+            {
+                chest =
+                    collider.GetComponentInParent<Chest>();
+            }
+
+            if (chest == null)
+            {
+                continue;
+            }
+
+            if (chest.IsOpen())
+            {
+                continue;
+            }
+
+            Vector3 closestPoint =
+                collider.ClosestPoint(
+                    transform.position
+                );
+
+            float distance =
+                Vector3.Distance(
+                    transform.position,
+                    closestPoint
+                );
+
+            if (distance < closestDistance)
+            {
+                closestDistance =
+                    distance;
+
+                closestChest =
+                    chest;
+            }
+        }
+
+        nearbyChest =
+            closestChest;
+
+        if (nearbyChest == null)
+        {
+            return;
+        }
+
+        if (nearbyChest.requireAllKeys &&
+            !nearbyChest.CanOpen())
+        {
+            if (GameManager.Instance != null)
+            {
+                GameManager.Instance.ShowMessage(
+                    "Cần đủ 3 chìa khóa để mở rương."
+                );
+            }
+
+            return;
+        }
+
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.ShowMessage(
+                "Phát hiện rương! Nhấn E để mở."
+            );
+        }
+    }
+
     void HandleInteraction()
     {
         if (!Keyboard.current.eKey.wasPressedThisFrame)
@@ -271,68 +418,33 @@ public class PlayerController : MonoBehaviour
             return;
         }
 
-        Chest[] chests =
-            FindObjectsByType<Chest>(
-                FindObjectsSortMode.None
-            );
-
-        Chest nearestChest = null;
-
-        float nearestDistance =
-            chestInteractionDistance;
-
-        foreach (Chest chest in chests)
+        if (nearbyChest == null)
         {
-            if (chest.IsOpen())
-            {
-                continue;
-            }
-
-            Collider chestCollider =
-                chest.GetComponent<Collider>();
-
-            float distance;
-
-            if (chestCollider != null)
-            {
-                Vector3 closestPoint =
-                    chestCollider.ClosestPoint(
-                        transform.position
-                    );
-
-                distance =
-                    Vector3.Distance(
-                        transform.position,
-                        closestPoint
-                    );
-            }
-            else
-            {
-                distance =
-                    Vector3.Distance(
-                        transform.position,
-                        chest.transform.position
-                    );
-            }
-
-            if (distance <= nearestDistance)
-            {
-                nearestDistance =
-                    distance;
-
-                nearestChest =
-                    chest;
-            }
+            return;
         }
 
-        if (nearestChest != null)
+        if (nearbyChest.IsOpen())
         {
-            StartCoroutine(
-                OpenChestRoutine(
-                    nearestChest
-                )
-            );
+            return;
         }
+
+        if (!nearbyChest.CanOpen())
+        {
+            if (GameManager.Instance != null)
+            {
+                GameManager.Instance.ShowMessage(
+                    "Bạn chưa có đủ 3 chìa khóa."
+                );
+            }
+
+            return;
+        }
+
+        StartCoroutine(
+            OpenChestRoutine(
+                nearbyChest
+            )
+        );
     }
 
     IEnumerator OpenChestRoutine(
@@ -340,6 +452,11 @@ public class PlayerController : MonoBehaviour
     )
     {
         isOpeningChest = true;
+
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.HideMessage();
+        }
 
         Vector3 direction =
             chest.transform.position -
@@ -379,6 +496,8 @@ public class PlayerController : MonoBehaviour
         chest.OpenChest();
 
         isOpeningChest = false;
+
+        nearbyChest = null;
     }
 
     void UpdateAnimation()

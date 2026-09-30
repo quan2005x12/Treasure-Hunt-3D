@@ -5,9 +5,21 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/SampleScene.unity
     guid: 99c9720ab356a0642a771bea13969a05
+  - enabled: 1
+    path: Assets/Scenes/BeachScene.unity
+    guid: 7facbf045545ad346b2e8fb8efcc79b8
+  - enabled: 1
+    path: Assets/Scenes/CaveScene.unity
+    guid: 6a1d8611506e66341bb4f65ecd2e6849
+  - enabled: 1
+    path: Assets/Scenes/ForestScene.unity
+    guid: 4b65c1ad3c3678645b199aece3b1e11c
+  - enabled: 1
+    path: Assets/Scenes/TreasureScene.unity
+    guid: 36ec4417e0f6ad044bb6e55e2fa6d19b
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0
