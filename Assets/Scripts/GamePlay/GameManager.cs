@@ -1,6 +1,4 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
-using System.Collections;
 
 public class GameManager : MonoBehaviour
 {
@@ -13,21 +11,13 @@ public class GameManager : MonoBehaviour
     public AudioSource audioSource;
 
     public AudioClip keyPickupSound;
-    public AudioClip portalSound;
     public AudioClip chestOpenSound;
     public AudioClip victorySound;
-
-    [Header("Scene Transition")]
-    public CanvasGroup transitionCanvasGroup;
-
-    public float fadeInDuration = 0.5f;
 
     private bool[] collectedKeys = new bool[3];
 
     private string message = "";
     private float messageTimer = 0f;
-
-    private bool isTransitioning = false;
 
     void Awake()
     {
@@ -41,13 +31,6 @@ public class GameManager : MonoBehaviour
         Instance = this;
 
         DontDestroyOnLoad(gameObject);
-
-        if (transitionCanvasGroup != null)
-        {
-            transitionCanvasGroup.alpha = 0f;
-            transitionCanvasGroup.interactable = false;
-            transitionCanvasGroup.blocksRaycasts = false;
-        }
     }
 
     void Update()
@@ -148,13 +131,6 @@ public class GameManager : MonoBehaviour
         );
     }
 
-    public void PlayPortalSound()
-    {
-        PlaySound(
-            portalSound
-        );
-    }
-
     public void PlayChestOpenSound()
     {
         PlaySound(
@@ -195,170 +171,6 @@ public class GameManager : MonoBehaviour
         );
     }
 
-    public void StartSceneTransition(
-        string nextSceneName)
-    {
-        if (isTransitioning)
-        {
-            return;
-        }
-
-        if (string.IsNullOrEmpty(nextSceneName))
-        {
-            Debug.LogError(
-                "Tên Scene tiếp theo đang trống."
-            );
-
-            return;
-        }
-
-        StartCoroutine(
-            SceneTransitionRoutine(
-                nextSceneName
-            )
-        );
-    }
-
-    IEnumerator SceneTransitionRoutine(
-        string nextSceneName)
-    {
-        isTransitioning = true;
-
-        Debug.Log(
-            "Bắt đầu chuyển Scene: " +
-            nextSceneName
-        );
-
-        // ========================================
-        // 1. TẮT BGM MAP HIỆN TẠI
-        // ========================================
-
-        StopBackgroundMusic();
-
-        // ========================================
-        // 2. HIỆN MÀN HÌNH ĐEN NGAY LẬP TỨC
-        // ========================================
-
-        if (transitionCanvasGroup != null)
-        {
-            transitionCanvasGroup.alpha = 1f;
-
-            transitionCanvasGroup.interactable = false;
-            transitionCanvasGroup.blocksRaycasts = true;
-        }
-
-        // ========================================
-        // 3. PHÁT ÂM THANH PORTAL
-        // ========================================
-
-        PlayPortalSound();
-
-        float portalSoundLength = 0f;
-
-        if (portalSound != null)
-        {
-            portalSoundLength =
-                portalSound.length;
-        }
-
-        // ========================================
-        // 4. BẮT ĐẦU LOAD SCENE NGAY
-        // ========================================
-
-        AsyncOperation asyncLoad =
-            SceneManager.LoadSceneAsync(
-                nextSceneName
-            );
-
-        if (asyncLoad == null)
-        {
-            Debug.LogError(
-                "Không thể Load Scene: " +
-                nextSceneName
-            );
-
-            isTransitioning = false;
-
-            yield break;
-        }
-
-        // Không cho Scene mới hiển thị ngay.
-        asyncLoad.allowSceneActivation = false;
-
-        // ========================================
-        // 5. CHỜ SCENE LOAD XONG Ở PHÍA SAU
-        // ========================================
-
-        while (asyncLoad.progress < 0.9f)
-        {
-            yield return null;
-        }
-
-        Debug.Log(
-            "Scene mới đã Load xong ở phía sau."
-        );
-
-        // ========================================
-        // 6. CHỜ PORTAL AUDIO PHÁT XONG
-        // ========================================
-
-        if (portalSoundLength > 0f)
-        {
-            yield return new WaitForSeconds(
-                portalSoundLength
-            );
-        }
-
-        // ========================================
-        // 7. CHO SCENE MỚI HIỆN RA
-        // ========================================
-
-        asyncLoad.allowSceneActivation = true;
-
-        yield return null;
-
-        Debug.Log(
-            "Đã chuyển sang Scene mới."
-        );
-
-        // ========================================
-        // 8. FADE MÀN HÌNH ĐEN → MAP MỚI
-        // ========================================
-
-        if (transitionCanvasGroup != null)
-        {
-            float timer = 0f;
-
-            while (timer < fadeInDuration)
-            {
-                timer += Time.deltaTime;
-
-                float alpha =
-                    1f -
-                    Mathf.Clamp01(
-                        timer /
-                        fadeInDuration
-                    );
-
-                transitionCanvasGroup.alpha =
-                    alpha;
-
-                yield return null;
-            }
-
-            transitionCanvasGroup.alpha = 0f;
-
-            transitionCanvasGroup.interactable = false;
-            transitionCanvasGroup.blocksRaycasts = false;
-        }
-
-        isTransitioning = false;
-
-        Debug.Log(
-            "Hoàn tất hiệu ứng chuyển Scene."
-        );
-    }
-
     public void ShowCongratulations()
     {
         HideMessage();
@@ -369,9 +181,35 @@ public class GameManager : MonoBehaviour
             victorySound
         );
 
-        if (congratulationsPanel != null)
+        // Tìm CongratulationsUI trong Scene hiện tại
+        // kể cả khi Panel đang bị inactive.
+        CongratulationsUI congratulationsUI =
+            FindFirstObjectByType<CongratulationsUI>(
+                FindObjectsInactive.Include
+            );
+
+        if (congratulationsUI != null)
         {
+            congratulationsUI.ShowCongratulations();
+
+            Debug.Log(
+                "Đã hiển thị giao diện CHÚC MỪNG."
+            );
+        }
+        else if (congratulationsPanel != null)
+        {
+            // Phương án dự phòng
             congratulationsPanel.SetActive(true);
+
+            Debug.Log(
+                "Đã hiển thị Congratulations Panel."
+            );
+        }
+        else
+        {
+            Debug.LogError(
+                "Không tìm thấy CongratulationsUI hoặc CongratulationsPanel."
+            );
         }
 
         Debug.Log(

@@ -20,19 +20,29 @@ public class ScenePortal : MonoBehaviour
             return;
         }
 
-        isLoading = true;
+        LoadNextScene();
+    }
 
-        if (GameManager.Instance != null)
-        {
-            GameManager.Instance.StartSceneTransition(
-                nextSceneName
-            );
-        }
-        else
+    void LoadNextScene()
+    {
+        if (string.IsNullOrEmpty(nextSceneName))
         {
             Debug.LogError(
-                "Không tìm thấy GameManager."
+                "Chưa nhập tên Scene tiếp theo."
             );
+
+            return;
         }
+
+        isLoading = true;
+
+        Debug.Log(
+            "Người chơi đã bước vào Portal."
+        );
+
+        // Chuyển Scene ngay lập tức
+        SceneManager.LoadScene(
+            nextSceneName
+        );
     }
 }

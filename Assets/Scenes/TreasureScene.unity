@@ -531,7 +531,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 1b2372c243a5e874e87453462004c8a9, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -13.371059
+      value: -13.13
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 1b2372c243a5e874e87453462004c8a9, type: 3}
       propertyPath: m_LocalPosition.y
@@ -539,7 +539,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 1b2372c243a5e874e87453462004c8a9, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 45.96575
+      value: 45.96
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 1b2372c243a5e874e87453462004c8a9, type: 3}
       propertyPath: m_LocalRotation.w
@@ -7804,6 +7804,8 @@ MonoBehaviour:
   portalSound: {fileID: 8300000, guid: 8b3ae717ad3290b41937ab23cde75263, type: 3}
   chestOpenSound: {fileID: 8300000, guid: e2cd225ce8e1b2443a585d16878c66e0, type: 3}
   victorySound: {fileID: 8300000, guid: a68b8635ccb5e134180e5f41f92d9bfa, type: 3}
+  transitionCanvasGroup: {fileID: 0}
+  fadeInDuration: 0.5
 --- !u!4 &913493254
 Transform:
   m_ObjectHideFlags: 0
@@ -9749,7 +9751,7 @@ Transform:
   m_GameObject: {fileID: 1186486710}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.9809, y: 0, z: 8}
+  m_LocalPosition: {x: 0.9809, y: -1.2, z: 8}
   m_LocalScale: {x: 10, y: 1, z: 20}
   m_ConstrainProportionsScale: 0
   m_Children: []

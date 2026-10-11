@@ -2684,7 +2684,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ScenePortal
   nextSceneName: ForestScene
-  delayBeforeSceneLoad: 0.1
 --- !u!65 &388655020
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -3208,7 +3207,7 @@ MeshCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 5
   m_Convex: 0
   m_CookingOptions: 30
@@ -5481,7 +5480,7 @@ MeshCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 5
   m_Convex: 0
   m_CookingOptions: 30
@@ -7549,7 +7548,7 @@ MeshCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 5
   m_Convex: 0
   m_CookingOptions: 30
@@ -11293,7 +11292,6 @@ MonoBehaviour:
   congratulationsPanel: {fileID: 0}
   audioSource: {fileID: 1608926132}
   keyPickupSound: {fileID: 8300000, guid: 7dc9d95616c285c458bc5e5844dcc76c, type: 3}
-  portalSound: {fileID: 8300000, guid: 8b3ae717ad3290b41937ab23cde75263, type: 3}
   chestOpenSound: {fileID: 8300000, guid: e2cd225ce8e1b2443a585d16878c66e0, type: 3}
   victorySound: {fileID: 8300000, guid: a68b8635ccb5e134180e5f41f92d9bfa, type: 3}
 --- !u!4 &1608926131
@@ -11610,7 +11608,7 @@ MeshCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 5
   m_Convex: 0
   m_CookingOptions: 30
@@ -13011,7 +13009,7 @@ MeshCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 5
   m_Convex: 0
   m_CookingOptions: 30
